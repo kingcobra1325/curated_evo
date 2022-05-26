@@ -1,10 +1,10 @@
 from curated_evo.spider_templates import EvoSpider
 
-class SkisSpider(EvoSpider):
-    name = 'Skis'
-    start_urls = ['https://www.evo.com/shop/ski/skis']
+class SkiHelmetsSpider(EvoSpider):
+    name = 'Ski_Helmets'
+    start_urls = ['https://www.evo.com/shop/ski/ski-helmets']
 
-    item_measurement = 'cm'
+    item_measurement = ''
 
     data_to_scrape = [
                         "Name",                                            
@@ -16,12 +16,12 @@ class SkisSpider(EvoSpider):
                         "Available Sizes",
                         "Condition",
                         # ski / snowboard
-                        "Terrain",
-                        "Ability Level",
-                        "Rocker Type",
+                        # "Terrain",
+                        # "Ability Level",
+                        # "Rocker Type",
                         # ski only
-                        "Turning Radius",
-                        "Waist Width",
+                        # "Turning Radius",
+                        # "Waist Width",
                         # snowboard only
                         # "Flex Rating",
                         # "Shape",

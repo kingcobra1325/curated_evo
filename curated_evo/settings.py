@@ -1,3 +1,5 @@
+from .env_vars import ENV
+
 # Scrapy settings for curated_evo project
 #
 # For simplicity, this file contains only settings considered important or
@@ -14,10 +16,17 @@ NEWSPIDER_MODULE = 'curated_evo.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'curated_evo (+http://www.yourdomain.com)'
+# USER_AGENT = 'curated_evo (+http://www.yourdomain.com)'
+USER_AGENT_LIST = [
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36 Edg/96.0.1054.62",
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36 Edg/97.0.1072.55",
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36",
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
+
+                    ]
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+# ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -50,21 +59,29 @@ ROBOTSTXT_OBEY = True
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'curated_evo.middlewares.CuratedEvoDownloaderMiddleware': 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+   'curated_evo.middlewares.RotateUserAgentMiddleware': 100,
+   'scrapy_selenium.SeleniumMiddleware': 200,
+}
+
+# SELENIUM SETTINGS
+SELENIUM_DRIVER_NAME = 'chrome'
+SELENIUM_DRIVER_EXECUTABLE_PATH = ENV.DRIVER_PATH
+SELENIUM_DRIVER_ARGUMENTS=['--headless']  
+# SELENIUM_DRIVER_ARGUMENTS=[]
+# SELENIUM_MAX_INSTANCES = 2
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
 #EXTENSIONS = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
-#}
+#}pip install git+https://github.com/dylanwalker/better-scrapy-selenium.git
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'curated_evo.pipelines.CuratedEvoPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'curated_evo.pipelines.WriteGoogleSheetsPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

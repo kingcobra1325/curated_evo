@@ -1,17 +1,19 @@
 
-import gspread
 import pandas as pd
 
+import gspread
 from gspread.exceptions import WorksheetNotFound
+from gspread_formatting import set_column_width
 from gspread_dataframe import get_as_dataframe, set_with_dataframe
 
-from curated_evo.env_vars import ENV
-from curated_evo.decorators import connection_retry
+from .env_vars import ENV
+from .decorators import connection_retry
 
 df_columns_list = [
                                             "Last Updated",
                                             "Type",
-                                            "Name",                                            
+                                            "Name",
+                                            "URL",                                            
                                             "Brand", 
                                             "Image Source URLs",                                            
                                             "Sale Price",
@@ -36,6 +38,15 @@ class Gsheet:
     worksheets = {}
     dataframes = {}
 
+    error_columns_list = [
+                        "Time",
+                        'Spider',
+                        'Process',
+                        "URL",
+                        "Error",
+                        "Traceback"
+                    ]
+
     @connection_retry()
     def reorder_sheets(self,new_order=[]):
         order = []
@@ -59,6 +70,7 @@ class Gsheet:
         self.authenticate_gspread()
         # Create Dataframe
         self.base_df = pd.DataFrame(columns=columns_list)
+        self.errors_df = pd.DataFrame(columns=self.error_columns_list)
     
     @connection_retry()
     def read_worksheet(self,name='DefaultSheetName'):
@@ -66,11 +78,12 @@ class Gsheet:
             worksheet = self.spreadsheet.worksheet(name)
             print(f"Getting worksheet |{name}|")
             self.worksheets.update({name:worksheet})
+            sheet_df = get_as_dataframe(self.worksheets[name])
         except WorksheetNotFound as e:
             print(f"Worksheet not found --> |{name}|. {e}")
             print(f"Creating new worksheet")
-            self.create_new_sheet()
-        sheet_df = get_as_dataframe(self.worksheets[name])
+            sheet_df = self.create_new_sheet(name=name)
+
         # REMOVE EMPTY ROWS
         sheet_df.dropna(how='all',inplace=True)
         
@@ -78,17 +91,29 @@ class Gsheet:
     
     @connection_retry()
     def write_worksheet(self,name='DefaultSheetName'):
+        if name != 'ERRORS':
+            time_name = self.base_df.columns[0]
+        else:
+            time_name = self.errors_df.columns[0]
         # Sort Items on DataFrame Descending
-        self.dataframes[name]["Last Updated"] = self.dataframes[name]["Last Updated"].astype('datetime64[ns]')
-        self.dataframes[name].sort_values(by='Last Updated', ascending = False, inplace=True)
+        self.dataframes[name][time_name] = self.dataframes[name][time_name].astype('datetime64[ns]')
+        self.dataframes[name].sort_values(by=time_name, ascending = False, inplace=True)
+        # Remove Duplicate Items
+        if name != 'ERRORS':
+            self.dataframes[name].drop_duplicates(subset=['Type','Name','Brand'],keep='last',inplace=True)
         # Write DataFrame to Sheet
         set_with_dataframe(self.worksheets[name], self.dataframes[name])
 
 
-    # @connection_retry()
+    @connection_retry()
     def create_new_sheet(self,name='DefaultSheetName'):
 
-        number_of_cols = self.base_df.shape[1]
+        if name != 'ERRORS':
+            df_to_set = self.base_df
+        else:
+            df_to_set = self.errors_df
+        number_of_cols = df_to_set.shape[1]
+
         last_column = chr(number_of_cols + 64)
         column_range = f'A:{last_column}'
         column_range_row = f'A1:{last_column}1'
@@ -115,11 +140,33 @@ class Gsheet:
                                                                     }
                                                 })
         worksheet.freeze(rows=1)
+        self.resize_worksheet(worksheet)
+        if name != 'ERRORS':
+            self.reorder_sheets([name,'||'])
+
         # Set Dataframe to Blank worksheet
-        set_with_dataframe(worksheet,self.base_df)
-        self.reorder_sheets([name])
+        set_with_dataframe(worksheet,df_to_set)
 
         self.worksheets.update({name:worksheet})
-        self.dataframes.update({name:self.base_df})
+        self.dataframes.update({name:df_to_set})
+
+        return self.dataframes[name]
+    
+    def resize_worksheet(self,worksheet):
+        if worksheet.title != 'ERRORS':
+            set_column_width(worksheet, 'D', 300)
+            set_column_width(worksheet, 'F', 450)
+        else:
+            set_column_width(worksheet, 'D', 300)
+            set_column_width(worksheet, 'E', 450)
+            set_column_width(worksheet, 'F', 700)
+    
+    @connection_retry()
+    def add_error_data(self,data):
+        self.read_worksheet('ERRORS')
+        self.dataframes['ERRORS'].loc[self.dataframes['ERRORS'].shape[0]] = data
+        self.write_worksheet('ERRORS')
+
+
 
 gsheet = Gsheet(df_columns_list)

@@ -3,10 +3,19 @@
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+import random
 from scrapy import signals
 
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
+
+from .settings import USER_AGENT_LIST
+
+
+class RotateUserAgentMiddleware:
+    def process_request(self, request, spider):
+        user_agent = random.choice(USER_AGENT_LIST)
+        request.headers['User-Agent'] = user_agent
 
 
 class CuratedEvoSpiderMiddleware:
