@@ -164,7 +164,6 @@ class EvoSpider(BaseSeleniumSpider):
                 ability_lvl = driver.find_element_by_xpath("//li[contains(@class,'ability')]/span[@class='pdp-spec-list-description']").get_attribute('textContent')
                 result["Ability Level"] = ability_lvl
             if "Rocker Type" in self.data_to_scrape:
-                rocker_type = driver.find_element_by_xpath("").get_attribute('textContent')
                 rocker_type = self.scrape_xpath(driver,[
                                                     "//h5[text()='Rocker Type']/following-sibling::div[@class='pdp-feature-description']",
                                                     "//strong[contains(text(),'Rocker Type')]/parent::span/following-sibling::span"
