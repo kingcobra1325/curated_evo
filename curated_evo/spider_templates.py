@@ -151,13 +151,13 @@ class EvoSpider(BaseSeleniumSpider):
             if "Original Price" in data_to_scrape:
                 result["Original Price"] = self.scrape_xpath(driver,xpath_list=[
                                                             "//span[contains(@class,'pdp-price-message')]",
-                                                            "//span[contains(@class,'pdp-price-regular')]",
-                                                            "//span[contains(@class,'pdp-price-regular')][2]"])
+                                                            "//span[contains(@class,'pdp-price-regular') and contains(@class,'no-wrap')]",
+                                                            "//span[contains(@class,'pdp-price-regular')]"])
             if "Available Colors" in data_to_scrape:
                 try:
                     raw_colors = self.scrape_xpath(driver,xpath_list=[
-                                                                        "//div[text()='Please select a color']/following-sibling::ul//img",
-                                                                        "//div[text()='Please select a color']/following-sibling::ul//span",
+                                                                    "//div[text()='Please select a color']/following-sibling::ul//img",
+                                                                    "//div[text()='Please select a color']/following-sibling::ul//span",
                                                                     ],multi=True)
                     avail_colors = "\n".join([f"{x.get_attribute('alt')}" for x in raw_colors])
                     result["Available Colors"] = avail_colors
