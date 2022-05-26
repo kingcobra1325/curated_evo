@@ -1,7 +1,5 @@
 import os
 
-# PIP INSTALL REQUIRED MODULES AUTOMATICALLY
-
 while True:
     try:
         import scrapy

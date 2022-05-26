@@ -1,3 +1,5 @@
+from curated_evo import missing_modules
+
 from twisted.internet import reactor, defer
 from scrapy.crawler import CrawlerRunner
 from scrapy.utils.log import configure_logging
