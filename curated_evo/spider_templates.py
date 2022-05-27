@@ -58,6 +58,8 @@ class BaseSeleniumSpider(scrapy.Spider):
             try:
                 if multi:
                     result = driver.find_elements_by_xpath(xpath)
+                    if not result:
+                        continue
                 else:
                     result = driver.find_element_by_xpath(xpath).get_attribute('textContent')
                 return result
@@ -156,6 +158,8 @@ class EvoSpider(BaseSeleniumSpider):
             if "Available Colors" in data_to_scrape:
                 try:
                     raw_colors = self.scrape_xpath(driver,xpath_list=[
+                                                                    "//div[contains(text(),'Please select') and contains(text(),'color')]/following-sibling::ul//img",
+                                                                    "//div[contains(text(),'Please select') and contains(text(),'color')]/following-sibling::ul//span",
                                                                     "//div[text()='Please select a color']/following-sibling::ul//img",
                                                                     "//div[text()='Please select a color']/following-sibling::ul//span",
                                                                     ],multi=True)
@@ -165,14 +169,22 @@ class EvoSpider(BaseSeleniumSpider):
                     avail_colors = "\n".join([x.get_attribute('title').split(" ")[-1] for x in raw_colors])
                     result["Available Colors"] = avail_colors
                 except NoSuchElementException as e:
-                    self.exception_handler(e,driver)
+                    check_colors_text = driver.find_element_by_xpath("//div[@id='buy-grid']").get_attribute('textContent').lower()
+                    if 'color' in check_colors_text:
+                        self.exception_handler(e,driver)
             if "Available Sizes" in data_to_scrape:
                 try:
-                    raw_sizes = driver.find_elements_by_xpath("//div[text()='Please select a size']/following-sibling::ul//span[contains(@class,'pdp-selection-text')]")
+                    raw_sizes = self.scrape_xpath(driver,[
+                        "//div[text()='Please select a size']/following-sibling::ul//span[contains(@class,'pdp-selection-text')]",
+                        "//div[contains(text(),'Please select') and contains(text(),'size')]/following-sibling::ul//span[contains(@class,'pdp-selection-text')]",                        
+                    ],multi=True)
                     avail_sizes = "\n".join([f"{x.get_attribute('textContent')}{item_measurement}".replace("\n","") for x in raw_sizes])
                     result["Available Sizes"] = avail_sizes
                 except (NoSuchElementException,TimeoutException) as e:
                     self.logger.debug(f"No available sizes found |{e}|")
+                    check_size_text = driver.find_element_by_xpath("//div[@id='buy-grid']").get_attribute('textContent').lower()
+                    if 'size' in check_size_text:
+                        self.exception_handler(e,driver)
                     self.exception_handler(e,driver)
             if "Condition" in data_to_scrape:
                 if 'used' in result["Name"].lower():
@@ -190,23 +202,39 @@ class EvoSpider(BaseSeleniumSpider):
                     if 'used' in result["Name"].lower():
                         self.exception_handler(e,driver)
             if "Terrain" in data_to_scrape:
-                terrain = driver.find_element_by_xpath("//li[contains(@class,'spec-terrain')]/span[@class='pdp-spec-list-description']").get_attribute('textContent')
-                result["Terrain"] = terrain
+                try:
+                    terrain = driver.find_element_by_xpath("//li[contains(@class,'spec-terrain')]/span[@class='pdp-spec-list-description']").get_attribute('textContent')
+                    result["Terrain"] = terrain
+                except (TimeoutException,NoSuchElementException) as e:
+                    self.logger.debug(f"No terrain found |{e}|")
+                    self.exception_handler(e,driver)
             if "Ability Level" in data_to_scrape:
-                ability_lvl = driver.find_element_by_xpath("//li[contains(@class,'ability')]/span[@class='pdp-spec-list-description']").get_attribute('textContent')
-                result["Ability Level"] = ability_lvl
+                try:
+                    ability_lvl = driver.find_element_by_xpath("//li[contains(@class,'ability')]/span[@class='pdp-spec-list-description']").get_attribute('textContent')
+                    result["Ability Level"] = ability_lvl
+                except (TimeoutException,NoSuchElementException) as e:
+                    self.logger.debug(f"No ability level found |{e}|")
+                    self.exception_handler(e,driver)
             if "Rocker Type" in data_to_scrape:
-                rocker_type = self.scrape_xpath(driver,[
-                                                    "//h5[text()='Rocker Type']/following-sibling::div[@class='pdp-feature-description']",
-                                                    "//strong[contains(text(),'Rocker Type')]/parent::span/following-sibling::span"
-                                                    ])
-                result["Rocker Type"] = rocker_type
+                try:
+                    rocker_type = self.scrape_xpath(driver,[
+                                                        "//h5[text()='Rocker Type']/following-sibling::div[@class='pdp-feature-description']",
+                                                        "//strong[contains(text(),'Rocker Type')]/parent::span/following-sibling::span"
+                                                        ])
+                    result["Rocker Type"] = rocker_type
+                except (TimeoutException,NoSuchElementException) as e:
+                    self.logger.debug(f"No rocker type found |{e}|")
+                    self.exception_handler(e,driver)
             if "Turning Radius" in data_to_scrape:
-                turning_radius = self.scrape_xpath(driver,[
-                                                    "//li[contains(@class,'turning-radius')]/span[@class='pdp-spec-list-description']",
-                                                    "//th[contains(text(),'Turning Radius')]/parent::tr",
-                                                    ]).replace("Turning Radius","")
-                result["Turning Radius"] = turning_radius
+                try:
+                    turning_radius = self.scrape_xpath(driver,[
+                                                        "//li[contains(@class,'turning-radius')]/span[@class='pdp-spec-list-description']",
+                                                        "//th[contains(text(),'Turning Radius')]/parent::tr",
+                                                        ]).replace("Turning Radius","")
+                    result["Turning Radius"] = turning_radius
+                except (TimeoutException,NoSuchElementException) as e:
+                    self.logger.debug(f"No turning radius found |{e}|")
+                    self.exception_handler(e,driver)
             if "Waist Width" in data_to_scrape:
                 try:
                     raw_waist_width = driver.find_elements_by_xpath("//th[contains(text(),'Waist Width')]/following-sibling::td")
