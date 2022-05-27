@@ -100,7 +100,7 @@ class Gsheet:
         self.dataframes[name].sort_values(by=time_name, ascending = False, inplace=True)
         # Remove Duplicate Items
         if name != 'ERRORS':
-            self.dataframes[name].drop_duplicates(subset=['Type','Name','Brand'],keep='last',inplace=True)
+            self.dataframes[name].drop_duplicates(subset=['Type','Name','Brand'],keep='first',inplace=True)
         # Write DataFrame to Sheet
         set_with_dataframe(self.worksheets[name], self.dataframes[name])
 
