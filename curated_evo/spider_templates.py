@@ -169,9 +169,10 @@ class EvoSpider(BaseSeleniumSpider):
                     avail_colors = "\n".join([x.get_attribute('title').split(" ")[-1] for x in raw_colors])
                     result["Available Colors"] = avail_colors
                 except NoSuchElementException as e:
-                    check_colors_text = driver.find_element_by_xpath("//div[@id='buy-grid']").get_attribute('textContent').lower()
-                    if 'color' in check_colors_text:
-                        self.exception_handler(e,driver)
+                    self.logger.debug(f"No available colors found |{e}|")
+                    # check_colors_text = driver.find_element_by_xpath("//div[@id='buy-grid']").get_attribute('textContent').lower()
+                    # if 'color' in check_colors_text:
+                        # self.exception_handler(e,driver)
             if "Available Sizes" in data_to_scrape:
                 try:
                     raw_sizes = self.scrape_xpath(driver,[
@@ -185,7 +186,6 @@ class EvoSpider(BaseSeleniumSpider):
                     check_size_text = driver.find_element_by_xpath("//div[@id='buy-grid']").get_attribute('textContent').lower()
                     if 'size' in check_size_text:
                         self.exception_handler(e,driver)
-                    self.exception_handler(e,driver)
             if "Condition" in data_to_scrape:
                 if 'used' in result["Name"].lower():
                     condition_status = "Used"
