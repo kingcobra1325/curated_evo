@@ -201,8 +201,7 @@ class EvoSpider(BaseSeleniumSpider):
                     self.logger.debug(f"No available conditions found |{e}|")
                     if 'used' in result["Name"].lower():
                         self.exception_handler(e,driver)
-                    else:
-                        result.update({"Condition":condition_status})
+                    result.update({"Condition":condition_status})
             if "Terrain" in data_to_scrape:
                 try:
                     terrain = driver.find_element_by_xpath("//li[contains(@class,'spec-terrain')]/span[@class='pdp-spec-list-description']").get_attribute('textContent')
