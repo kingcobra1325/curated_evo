@@ -246,14 +246,20 @@ class EvoSpider(BaseSeleniumSpider):
                     self.exception_handler(e,driver)
             if "Flex Rating" in data_to_scrape:
                 try:
-                    flex_rating = driver.find_element_by_xpath("//h5[text()='Flex']/following-sibling::div[@class='pdp-feature-description']").get_attribute('textContent')
+                    flex_rating = self.scrape_xpath(driver,[
+                        "//h5[text()='Flex']/following-sibling::div[@class='pdp-feature-description']",
+                        "//li[contains(@class,'spec-flex-rating')]//span[contains(@class,'pdp-spec-list-description')]",
+                    ])
                     result["Flex Rating"] = flex_rating
                 except (TimeoutException,NoSuchElementException) as e:
                     self.logger.debug(f"No flex rating found |{e}|")
                     self.exception_handler(e,driver)
             if "Shape" in data_to_scrape:
                 try:
-                    shape = driver.find_element_by_xpath("//h5[text()='Shape']/following-sibling::div[@class='pdp-feature-description']").get_attribute('textContent')
+                    shape = self.scrape_xpath(driver,[
+                        "//h5[text()='Shape']/following-sibling::div[@class='pdp-feature-description']",
+                        "//li[contains(@class,'spec-shape')]//span[contains(@class,'pdp-spec-list-description')]",
+                    ])
                     result["Shape"] = shape
                 except (TimeoutException,NoSuchElementException) as e:
                     self.logger.debug(f"No shape found |{e}|")
