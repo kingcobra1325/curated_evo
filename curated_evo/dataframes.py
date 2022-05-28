@@ -108,7 +108,7 @@ class Gsheet:
         self.dataframes[name].loc[row_index] = data
         self.convert_datetime_to_str(name,sort=False)
         self.worksheets[name].append_row(list(self.dataframes[name].iloc[row_index]))
-        
+
         self.worksheets[name].sort((1, 'desc'))
 
     @connection_retry()
@@ -125,7 +125,7 @@ class Gsheet:
         column_range_row = f'A1:{last_column}1'
 
         # Create worksheet
-        worksheet = self.spreadsheet.add_worksheet(title=name, rows="1", cols=number_of_cols)
+        worksheet = self.spreadsheet.add_worksheet(title=name, rows="2", cols=number_of_cols)
 
         # Format worksheet
         worksheet.format(column_range,{"wrapStrategy":"WRAP"})
