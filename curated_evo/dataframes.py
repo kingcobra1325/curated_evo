@@ -101,7 +101,7 @@ class Gsheet:
         set_with_dataframe(self.worksheets[name], self.dataframes[name])
 
     @connection_retry()
-    def add_data_row(self,name='DefaultSheetName',data):
+    def add_data_row(self,data,name='DefaultSheetName'):
         self.read_worksheet(name=name)
         row_index = self.dataframes[name].shape[0]
         self.dataframes[name].loc[row_index] = data
