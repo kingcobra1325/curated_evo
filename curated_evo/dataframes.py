@@ -91,9 +91,7 @@ class Gsheet:
     
     @connection_retry()
     def write_worksheet(self,name='DefaultSheetName'):
-        time_name = self.convert_datetime_to_str(name)
-        # Sort Items on DataFrame Descending
-        self.dataframes[name].sort_values(by=time_name, ascending = False, inplace=True)
+        self.convert_datetime_to_str(name)
         # Remove Duplicate Items
         if name != 'ERRORS':
             self.dataframes[name].drop_duplicates(subset=['Type','Name','Brand'],keep='first',inplace=True)
@@ -103,10 +101,15 @@ class Gsheet:
     @connection_retry()
     def add_data_row(self,data,name='DefaultSheetName'):
         self.read_worksheet(name=name)
+
         row_index = self.dataframes[name].shape[0]
+        self.worksheets[name].resize(row_index+1)
+
         self.dataframes[name].loc[row_index] = data
-        self.convert_datetime_to_str(name)
-        self.worksheets[name].append_row(list(data.values()))
+        self.convert_datetime_to_str(name,sort=False)
+        self.worksheets[name].append_row(list(self.dataframes[name].iloc[row_index]))
+        
+        self.worksheets[name].sort((1, 'desc'))
 
     @connection_retry()
     def create_new_sheet(self,name='DefaultSheetName'):
@@ -170,14 +173,16 @@ class Gsheet:
         self.dataframes['ERRORS'].loc[self.dataframes['ERRORS'].shape[0]] = data
         self.write_worksheet('ERRORS')
     
-    def convert_datetime_to_str(self,name='DefaultSheetName'):
+    def convert_datetime_to_str(self,name='DefaultSheetName',sort=True):
         if name != 'ERRORS':
             time_name = self.base_df.columns[0]
         else:
             time_name = self.errors_df.columns[0]
         # Sort Items on DataFrame Descending
         self.dataframes[name][time_name] = self.dataframes[name][time_name].astype('datetime64[ns]')
-        return time_name
+        # Sort Items on DataFrame Descending
+        if sort:
+            self.dataframes[name].sort_values(by=time_name, ascending = False, inplace=True)
 
 
 
