@@ -71,6 +71,7 @@ class Gsheet:
         # Create Dataframe
         self.base_df = pd.DataFrame(columns=columns_list)
         self.errors_df = pd.DataFrame(columns=self.error_columns_list)
+        self.read_worksheet('ERRORS')
     
     @connection_retry()
     def read_worksheet(self,name='DefaultSheetName'):
@@ -104,7 +105,7 @@ class Gsheet:
 
     @connection_retry()
     def add_data_row(self,data,name='DefaultSheetName'):
-        self.read_worksheet(name=name)
+        # self.read_worksheet(name=name)
         time_name = self.get_time_name(name)
         
         row_index = self.dataframes[name].shape[0]
@@ -177,16 +178,6 @@ class Gsheet:
         else:
             time_name = self.errors_df.columns[0]
         return time_name
-    
-    @connection_retry()
-    def add_error_data(self,data):
-        self.read_worksheet('ERRORS')
-        self.dataframes['ERRORS'].loc[self.dataframes['ERRORS'].shape[0]] = data
-        self.write_worksheet('ERRORS')
-    
-           
-
-
 
 
 gsheet = Gsheet(df_columns_list)
