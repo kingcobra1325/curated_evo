@@ -7,11 +7,15 @@
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 
+from scrapy.utils.project import get_project_settings
+
 from curated_evo.dataframes import gsheet
+
+scrapy_settings = get_project_settings()
 
 class WriteGoogleSheetsPipeline:
 
-    sheetname = "CuratedEvo"
+    sheetname = scrapy_settings['GSHEET_NAME']
 
     def open_spider(self,spider):
         self.gsheet = gsheet
@@ -43,7 +47,7 @@ class WriteGoogleSheetsPipeline:
                     "Shape": adapter.get("shape")[0],
             }
 
-        self.gsheet.add_data_row(data,self.sheetname)
+        self.gsheet.add_row_to_sheet(data,self.sheetname)
         print(f"|{self.sheetname}| Row Count: {self.gsheet.dataframes[self.sheetname].shape[0]}")
         
         return item

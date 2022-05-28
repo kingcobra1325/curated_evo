@@ -37,7 +37,7 @@ class BaseSeleniumSpider(scrapy.Spider):
                         "Traceback" : traceback.format_exc(),
 
                     }
-        gsheet.add_data_row(error_data,'ERRORS')
+        gsheet.add_row_to_sheet(error_data,'ERRORS')
 
     def start_requests(self):
         self.meta_data.update({

@@ -6,8 +6,12 @@ from gspread.exceptions import WorksheetNotFound
 from gspread_formatting import set_column_width
 from gspread_dataframe import get_as_dataframe, set_with_dataframe
 
+from scrapy.utils.project import get_project_settings
+
 from .env_vars import ENV
-from .decorators import connection_retry
+from .decorators import connection_retry, conditional_function
+
+scrapy_settings = get_project_settings()
 
 df_columns_list = [
                                             "Last Updated",
@@ -104,17 +108,20 @@ class Gsheet:
         set_with_dataframe(self.worksheets[name], self.dataframes[name])
 
     @connection_retry()
-    def add_data_row(self,data,name='DefaultSheetName'):
+    def add_row_to_sheet(self,data,name='DefaultSheetName'):
         # self.read_worksheet(name=name)
         time_name = self.get_time_name(name)
         
-        row_index = self.dataframes[name].shape[0]
-        # self.worksheets[name].resize(row_index+1)
         data[time_name] = data[time_name].strftime(("%m-%d-%Y %H:%M:%S"))
-        self.dataframes[name].loc[row_index] = data
+        self.add_row_to_dataframe(data,name)
         self.worksheets[name].append_row(list(data.values()))
-        
         self.worksheets[name].sort((1, 'des'))
+
+    @conditional_function(scrapy_settings['SAVE_TO_DATAFRAME'])
+    def add_row_to_dataframe(self,data,name='DefaultSheetName'):
+        row_index = self.dataframes[name].shape[0]
+        self.dataframes[name].loc[row_index] = data
+
 
     @connection_retry()
     def create_new_sheet(self,name='DefaultSheetName'):
