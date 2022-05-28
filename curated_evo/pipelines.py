@@ -11,7 +11,7 @@ from curated_evo.dataframes import gsheet
 
 class WriteGoogleSheetsPipeline:
 
-    sheetname = "CuratedEvo"
+    sheetname = "TestingSheet"
 
     def open_spider(self,spider):
         self.gsheet = gsheet
