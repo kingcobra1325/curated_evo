@@ -67,9 +67,31 @@ DOWNLOADER_MIDDLEWARES = {
 # GSHEET SETTINGS
 
 GSHEET_NAME = "CuratedEvo"
+GSHEET_COLUMNS = [
+                        "Last Updated",
+                        "Type",
+                        "Name",
+                        "URL",                                            
+                        "Brand", 
+                        "Image Source URLs",                                            
+                        "Sale Price",
+                        "Original Price",
+                        "Available Colors",
+                        "Available Sizes",
+                        "Condition",
+                        # ski / snowboard
+                        "Terrain",
+                        "Ability Level",
+                        "Rocker Type",
+                        # ski only
+                        "Turning Radius",
+                        "Waist Width",
+                        # snowboard only
+                        "Flex Rating",
+                        "Shape",
+                     ]
 
 # PANDAS SETTINGS
-
 SAVE_TO_DATAFRAME = False
 
 # SELENIUM SETTINGS

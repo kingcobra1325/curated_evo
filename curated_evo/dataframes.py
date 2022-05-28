@@ -13,29 +13,7 @@ from .decorators import connection_retry, conditional_function
 
 scrapy_settings = get_project_settings()
 
-df_columns_list = [
-                                            "Last Updated",
-                                            "Type",
-                                            "Name",
-                                            "URL",                                            
-                                            "Brand", 
-                                            "Image Source URLs",                                            
-                                            "Sale Price",
-                                            "Original Price",
-                                            "Available Colors",
-                                            "Available Sizes",
-                                            "Condition",
-                                            # ski / snowboard
-                                            "Terrain",
-                                            "Ability Level",
-                                            "Rocker Type",
-                                            # ski only
-                                            "Turning Radius",
-                                            "Waist Width",
-                                            # snowboard only
-                                            "Flex Rating",
-                                            "Shape",
-                                        ]
+df_columns_list = scrapy_settings["GSHEET_COLUMNS"]
 
 class Gsheet:
 
