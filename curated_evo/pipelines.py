@@ -11,7 +11,7 @@ from curated_evo.dataframes import gsheet
 
 class WriteGoogleSheetsPipeline:
 
-    sheetname = "TestingSheet"
+    sheetname = "CuratedEvo"
 
     def open_spider(self,spider):
         self.gsheet = gsheet
@@ -43,11 +43,12 @@ class WriteGoogleSheetsPipeline:
                     "Shape": adapter.get("shape")[0],
             }
 
-        self.gsheet.dataframes[self.sheetname].loc[self.gsheet.dataframes[self.sheetname].shape[0]] = data
+        self.gsheet.add_data_row(data,self.sheetname)
         print(f"|{self.sheetname}| Row Count: {self.gsheet.dataframes[self.sheetname].shape[0]}")
         
         return item
     
     def close_spider(self,spider):
-        self.gsheet.write_worksheet(name=self.sheetname)
+        # self.gsheet.write_worksheet(name=self.sheetname)
+        pass
 

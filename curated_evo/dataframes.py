@@ -91,7 +91,11 @@ class Gsheet:
     
     @connection_retry()
     def write_worksheet(self,name='DefaultSheetName'):
-        self.convert_datetime_to_str(name)
+        time_name = self.get_time_name(name)
+        # Sort Items on DataFrame Descending
+        self.dataframes[name][time_name] = self.dataframes[name][time_name].astype('datetime64[ns]')
+        # Sort Items on DataFrame Descending
+        self.dataframes[name].sort_values(by=time_name, ascending = False, inplace=True)
         # Remove Duplicate Items
         if name != 'ERRORS':
             self.dataframes[name].drop_duplicates(subset=['Type','Name','Brand'],keep='first',inplace=True)
@@ -101,15 +105,15 @@ class Gsheet:
     @connection_retry()
     def add_data_row(self,data,name='DefaultSheetName'):
         self.read_worksheet(name=name)
-
+        time_name = self.get_time_name(name)
+        
         row_index = self.dataframes[name].shape[0]
-        self.worksheets[name].resize(row_index+1)
-
+        # self.worksheets[name].resize(row_index+1)
+        data[time_name] = data[time_name].strftime(("%m-%d-%Y %H:%M:%S"))
         self.dataframes[name].loc[row_index] = data
-        self.convert_datetime_to_str(name,sort=False)
-        self.worksheets[name].append_row(list(self.dataframes[name].iloc[row_index]))
-
-        self.worksheets[name].sort((1, 'desc'))
+        self.worksheets[name].append_row(list(data.values()))
+        
+        self.worksheets[name].sort((1, 'des'))
 
     @connection_retry()
     def create_new_sheet(self,name='DefaultSheetName'):
@@ -167,22 +171,21 @@ class Gsheet:
             set_column_width(worksheet, 'E', 450)
             set_column_width(worksheet, 'F', 700)
     
+    def get_time_name(self,name='DefaultSheetName'):
+        if name != 'ERRORS':
+            time_name = self.base_df.columns[0]
+        else:
+            time_name = self.errors_df.columns[0]
+        return time_name
+    
     @connection_retry()
     def add_error_data(self,data):
         self.read_worksheet('ERRORS')
         self.dataframes['ERRORS'].loc[self.dataframes['ERRORS'].shape[0]] = data
         self.write_worksheet('ERRORS')
     
-    def convert_datetime_to_str(self,name='DefaultSheetName',sort=True):
-        if name != 'ERRORS':
-            time_name = self.base_df.columns[0]
-        else:
-            time_name = self.errors_df.columns[0]
-        # Sort Items on DataFrame Descending
-        self.dataframes[name][time_name] = self.dataframes[name][time_name].astype('datetime64[ns]')
-        # Sort Items on DataFrame Descending
-        if sort:
-            self.dataframes[name].sort_values(by=time_name, ascending = False, inplace=True)
+           
+
 
 
 
