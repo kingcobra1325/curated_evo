@@ -15,6 +15,7 @@ class WriteGoogleSheetsPipeline:
 
     def open_spider(self,spider):
         self.gsheet = gsheet
+        self.gsheet.read_worksheet(name=self.sheetname)
 
     def process_item(self, item, spider):
 
@@ -23,9 +24,9 @@ class WriteGoogleSheetsPipeline:
 
         data = {
                     "Last Updated": adapter.get("last_updated")[0],
-                    "URL": adapter.get("url")[0],
                     "Type": adapter.get("type")[0],
                     "Name": adapter.get("name")[0],                                            
+                    "URL": adapter.get("url")[0],
                     "Brand":adapter.get("brand")[0], 
                     "Image Source URLs": adapter.get("image_source_url")[0],                                            
                     "Sale Price": adapter.get("sale_price")[0],
@@ -41,9 +42,12 @@ class WriteGoogleSheetsPipeline:
                     "Flex Rating": adapter.get("flex_rating")[0],
                     "Shape": adapter.get("shape")[0],
             }
-        
-        self.gsheet.read_worksheet(name=self.sheetname)
+
         self.gsheet.dataframes[self.sheetname].loc[self.gsheet.dataframes[self.sheetname].shape[0]] = data
+        print(f"|{self.sheetname}| Row Count: {self.gsheet.dataframes[self.sheetname].shape[0]}")
+        
+        return item
+    
+    def close_spider(self,spider):
         self.gsheet.write_worksheet(name=self.sheetname)
 
-        return item

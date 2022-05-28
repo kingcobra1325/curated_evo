@@ -91,12 +91,8 @@ class Gsheet:
     
     @connection_retry()
     def write_worksheet(self,name='DefaultSheetName'):
-        if name != 'ERRORS':
-            time_name = self.base_df.columns[0]
-        else:
-            time_name = self.errors_df.columns[0]
+        time_name = self.convert_datetime_to_str(name)
         # Sort Items on DataFrame Descending
-        self.dataframes[name][time_name] = self.dataframes[name][time_name].astype('datetime64[ns]')
         self.dataframes[name].sort_values(by=time_name, ascending = False, inplace=True)
         # Remove Duplicate Items
         if name != 'ERRORS':
@@ -104,6 +100,13 @@ class Gsheet:
         # Write DataFrame to Sheet
         set_with_dataframe(self.worksheets[name], self.dataframes[name])
 
+    @connection_retry()
+    def add_data_row(self,name='DefaultSheetName',data):
+        self.read_worksheet(name=name)
+        row_index = self.dataframes[name].shape[0]
+        self.dataframes[name].loc[row_index] = data
+        self.convert_datetime_to_str(name)
+        self.worksheets[name].append_row(list(data.values()))
 
     @connection_retry()
     def create_new_sheet(self,name='DefaultSheetName'):
@@ -119,7 +122,7 @@ class Gsheet:
         column_range_row = f'A1:{last_column}1'
 
         # Create worksheet
-        worksheet = self.spreadsheet.add_worksheet(title=name, rows="5000", cols=number_of_cols)
+        worksheet = self.spreadsheet.add_worksheet(title=name, rows="1", cols=number_of_cols)
 
         # Format worksheet
         worksheet.format(column_range,{"wrapStrategy":"WRAP"})
@@ -166,6 +169,15 @@ class Gsheet:
         self.read_worksheet('ERRORS')
         self.dataframes['ERRORS'].loc[self.dataframes['ERRORS'].shape[0]] = data
         self.write_worksheet('ERRORS')
+    
+    def convert_datetime_to_str(self,name='DefaultSheetName'):
+        if name != 'ERRORS':
+            time_name = self.base_df.columns[0]
+        else:
+            time_name = self.errors_df.columns[0]
+        # Sort Items on DataFrame Descending
+        self.dataframes[name][time_name] = self.dataframes[name][time_name].astype('datetime64[ns]')
+        return time_name
 
 
 
