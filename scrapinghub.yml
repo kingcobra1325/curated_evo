@@ -1,6 +1,3 @@
-projects:
-  default: 596298
-requirements:
-  file: requirements.txt
-stacks:
-  default: scrapy:2.6
+project: 596298
+requirements_file: ./requirements.txt
+image: true
