@@ -42,8 +42,8 @@ class Gsheet:
     @decorate.connection_retry()
     def authenticate_gspread(self):
         # Start Gspread
-        self.gc = gspread.service_account_from_dict(scrapy_settings["SERVICE_EMAIL"])
-        # Access Spreadsheet via ID
+        self.gc = gspread.service_account_from_dict(scrapy_settings["GOOGLE_API_KEY"])
+        # Access Spreadsheet via IDE
         self.spreadsheet = self.gc.open_by_key(scrapy_settings["SPREADSHEET_ID"])
 
     def __init__(self,columns_list=[]):
