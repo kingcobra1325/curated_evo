@@ -9,7 +9,7 @@ from gspread_dataframe import get_as_dataframe, set_with_dataframe
 from scrapy.utils.project import get_project_settings
 
 from .env_vars import ENV
-from .decorators import connection_retry, conditional_function
+from .decorators import decorate
 
 scrapy_settings = get_project_settings()
 
@@ -29,7 +29,7 @@ class Gsheet:
                         "Traceback"
                     ]
 
-    @connection_retry()
+    @decorate.connection_retry()
     def reorder_sheets(self,new_order=[]):
         order = []
         list_of_worksheets = self.spreadsheet.worksheets()
@@ -40,7 +40,7 @@ class Gsheet:
                         order.append(worksheet)
             self.spreadsheet.reorder_worksheets(order)
 
-    @connection_retry()
+    @decorate.connection_retry()
     def authenticate_gspread(self):
         # Start Gspread
         self.gc = gspread.service_account_from_dict(ENV.GOOGLE_API_KEY)
@@ -55,7 +55,7 @@ class Gsheet:
         self.errors_df = pd.DataFrame(columns=self.error_columns_list)
         self.read_worksheet('ERRORS')
     
-    @connection_retry()
+    @decorate.connection_retry()
     def read_worksheet(self,name='DefaultSheetName'):
         try:
             worksheet = self.spreadsheet.worksheet(name)
@@ -72,7 +72,7 @@ class Gsheet:
         
         self.dataframes.update({name:sheet_df})
     
-    @connection_retry()
+    @decorate.connection_retry()
     def write_worksheet(self,name='DefaultSheetName'):
         time_name = self.get_time_name(name)
         # Sort Items on DataFrame Descending
@@ -85,7 +85,7 @@ class Gsheet:
         # Write DataFrame to Sheet
         set_with_dataframe(self.worksheets[name], self.dataframes[name])
 
-    @connection_retry()
+    @decorate.connection_retry()
     def add_row_to_sheet(self,data,name='DefaultSheetName'):
         # self.read_worksheet(name=name)
         time_name = self.get_time_name(name)
@@ -95,13 +95,13 @@ class Gsheet:
         self.worksheets[name].append_row(list(data.values()))
         self.worksheets[name].sort((1, 'des'))
 
-    @conditional_function(scrapy_settings['SAVE_TO_DATAFRAME'])
+    @decorate.conditional_function(scrapy_settings['SAVE_TO_DATAFRAME'])
     def add_row_to_dataframe(self,data,name='DefaultSheetName'):
         row_index = self.dataframes[name].shape[0]
         self.dataframes[name].loc[row_index] = data
 
 
-    @connection_retry()
+    @decorate.connection_retry()
     def create_new_sheet(self,name='DefaultSheetName'):
 
         if name != 'ERRORS':

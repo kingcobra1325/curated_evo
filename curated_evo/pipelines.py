@@ -51,8 +51,3 @@ class WriteGoogleSheetsPipeline:
         print(f"|{self.sheetname}| Row Count: {self.gsheet.dataframes[self.sheetname].shape[0]}")
         
         return item
-    
-    def close_spider(self,spider):
-        # self.gsheet.write_worksheet(name=self.sheetname)
-        pass
-
