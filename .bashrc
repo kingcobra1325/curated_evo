@@ -1,0 +1,1 @@
+export PATH="/app/python/bin:$PATH"
