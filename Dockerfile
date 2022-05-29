@@ -1,4 +1,4 @@
-FROM scrapinghub/scrapinghub-stack-scrapy:2.1
+FROM scrapinghub/scrapinghub-stack-scrapy:2.6
 RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get install zip unzip
