@@ -1,4 +1,9 @@
-from .env_vars import ENV
+import ast
+from os import environ
+from dotenv import load_dotenv
+
+# LOAD ENV VARIABLES
+load_dotenv('.env')
 
 # Scrapy settings for curated_evo project
 #
@@ -14,6 +19,12 @@ BOT_NAME = 'curated_evo'
 SPIDER_MODULES = ['curated_evo.spiders']
 NEWSPIDER_MODULE = 'curated_evo.spiders'
 
+
+# BASE SETTINGS
+PRODUCTION = False
+SERVICE_EMAIL = environ['SERVICE_EMAIL']
+SPREADSHEET_ID = environ['SPREADSHEET_ID']
+GOOGLE_API_KEY = ast.literal_eval(environ['GOOGLE_SERVICE_ACCOUNT'])
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'curated_evo (+http://www.yourdomain.com)'
@@ -96,7 +107,7 @@ SAVE_TO_DATAFRAME = False
 
 # SELENIUM SETTINGS
 SELENIUM_DRIVER_NAME = 'chrome'
-SELENIUM_DRIVER_EXECUTABLE_PATH = ENV.DRIVER_PATH
+SELENIUM_DRIVER_EXECUTABLE_PATH = "/home/linux2/codes/webdrivers/chromedriver"
 SELENIUM_DRIVER_ARGUMENTS=['--headless']
 
 # Enable or disable extensions

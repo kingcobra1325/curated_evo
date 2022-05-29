@@ -8,7 +8,6 @@ from gspread_dataframe import get_as_dataframe, set_with_dataframe
 
 from scrapy.utils.project import get_project_settings
 
-from .env_vars import ENV
 from .decorators import decorate
 
 scrapy_settings = get_project_settings()
@@ -43,9 +42,9 @@ class Gsheet:
     @decorate.connection_retry()
     def authenticate_gspread(self):
         # Start Gspread
-        self.gc = gspread.service_account_from_dict(ENV.GOOGLE_API_KEY)
+        self.gc = gspread.service_account_from_dict(scrapy_settings["SERVICE_EMAIL"])
         # Access Spreadsheet via ID
-        self.spreadsheet = self.gc.open_by_key(ENV.SPREADSHEET_ID)
+        self.spreadsheet = self.gc.open_by_key(scrapy_settings["SPREADSHEET_ID"])
 
     def __init__(self,columns_list=[]):
         # Start Google API connection
