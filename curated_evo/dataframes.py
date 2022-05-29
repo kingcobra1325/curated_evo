@@ -93,7 +93,7 @@ class Gsheet:
         data[time_name] = data[time_name].strftime(("%m-%d-%Y %H:%M:%S"))
         self.add_row_to_dataframe(data,name)
         self.worksheets[name].append_row(list(data.values()))
-        self.worksheets[name].sort((1, 'des'))
+        # self.worksheets[name].sort((1, 'des'))
 
     @decorate.conditional_function(scrapy_settings['SAVE_TO_DATAFRAME'])
     def add_row_to_dataframe(self,data,name='DefaultSheetName'):

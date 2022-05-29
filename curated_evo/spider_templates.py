@@ -85,10 +85,6 @@ class EvoSpider(BaseSeleniumSpider):
     @decorate.selenium_spider_exception()
     def initial_parse(self, response):
         driver = response.request.meta['driver']
-        spider_name = response.request.meta['spider_name']
-        data_to_scrape = response.request.meta['data_to_scrape']
-        item_measurement = response.request.meta['item_measurement']
-
         item_urls = []
         next_page_raw = driver.find_element(By.XPATH,"//a[contains(@class,'results-next')]").get_attribute('href')
         raw_link = next_page_raw.replace("#","").split("/")
@@ -97,12 +93,18 @@ class EvoSpider(BaseSeleniumSpider):
         next_page = base_url+only_href
         self.logger.debug(f"THIS IS THE LINK = {next_page}")
         next_page_template = next_page.split("/")
-        for page in range(2,100000):
+        page=2
+        while True:
             try:
                 raw_items_list = WebDriverWait(driver,20).until(EC.presence_of_all_elements_located((By.XPATH, "//div[@class='product-thumb-details']//a")))
                 items_list = [x.get_attribute('href') for x in raw_items_list]
                 item_urls.extend(items_list)
                 self.logger.debug(f"Number of Items: {len(items_list)} - Total: {len(item_urls)} - Uniques: {len(list(set(item_urls)))}")
+                for item in items_list:
+                    self.logger.debug(f"Item Link: {item}")
+                    yield SeleniumRequest(url=item,
+                        callback=self.parse_item,
+                        meta=response.request.meta)
             except(NoSuchElementException,TimeoutException,StaleElementReferenceException) as e:
                 self.logger.debug(f"No more pages to crawl |{e}|")
                 break
@@ -111,17 +113,7 @@ class EvoSpider(BaseSeleniumSpider):
             next_page = "/".join(page_template)
             self.logger.debug(f"Next Page Link -> {next_page}")
             driver.get(next_page)
-        self.logger.debug(f"Total Number of Items to scrape: {len(item_urls)}")
-        for item in item_urls:
-            self.logger.debug(f"Item Link: {item}")
-            yield SeleniumRequest(url=item,
-                callback=self.parse_item,
-                meta={
-                'spider_name':spider_name,
-                "data_to_scrape":data_to_scrape,
-                "item_measurement":item_measurement,
-                "item_urls":item_urls,
-                })
+            page+=1
 
     @decorate.selenium_spider_exception()
     def parse_item(self,response):

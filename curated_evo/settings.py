@@ -99,7 +99,7 @@ SELENIUM_DRIVER_NAME = 'chrome'
 SELENIUM_DRIVER_EXECUTABLE_PATH = ENV.DRIVER_PATH
 SELENIUM_DRIVER_ARGUMENTS=['--headless']  
 # SELENIUM_DRIVER_ARGUMENTS=[]
-# SELENIUM_MAX_INSTANCES = 2
+SELENIUM_MAX_INSTANCES = 4
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
