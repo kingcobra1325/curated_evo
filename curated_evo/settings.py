@@ -97,9 +97,7 @@ SAVE_TO_DATAFRAME = False
 # SELENIUM SETTINGS
 SELENIUM_DRIVER_NAME = 'chrome'
 SELENIUM_DRIVER_EXECUTABLE_PATH = ENV.DRIVER_PATH
-SELENIUM_DRIVER_ARGUMENTS=['--headless']  
-# SELENIUM_DRIVER_ARGUMENTS=[]
-SELENIUM_MAX_INSTANCES = 4
+SELENIUM_DRIVER_ARGUMENTS=['--headless']
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
