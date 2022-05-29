@@ -12,11 +12,11 @@ class EnvVariables:
 
     # DEFAULT VARS
     def __init__(self):
-        self.PRODUCTION = environ['PRODUCTION']
-        self.SERVICE_EMAIL = environ['SERVICE_EMAIL']
-        self.SPREADSHEET_ID = environ['SPREADSHEET_ID']
-        self.DRIVER_PATH = environ['DRIVER_PATH']
-        self.GOOGLE_API_KEY = ast.literal_eval(environ['GOOGLE_SERVICE_ACCOUNT'])
+        self.PRODUCTION = environ.get('PRODUCTION')
+        self.SERVICE_EMAIL = environ.get('SERVICE_EMAIL')
+        self.SPREADSHEET_ID = environ.get('SPREADSHEET_ID')
+        self.DRIVER_PATH = environ.get('DRIVER_PATH')
+        self.GOOGLE_API_KEY = ast.literal_eval(environ.get('GOOGLE_SERVICE_ACCOUNT'))
     
     def __repr__(self):
         repr_string = ''
