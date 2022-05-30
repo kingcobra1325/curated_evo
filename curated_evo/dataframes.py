@@ -87,9 +87,6 @@ class Gsheet:
     @decorate.connection_retry()
     def add_row_to_sheet(self,data,name='DefaultSheetName'):
         # self.read_worksheet(name=name)
-        time_name = self.get_time_name(name)
-        
-        data[time_name] = data[time_name].strftime(("%m-%d-%Y %H:%M:%S"))
         self.add_row_to_dataframe(data,name)
         self.worksheets[name].append_row(list(data.values()))
         # self.worksheets[name].sort((1, 'des'))
