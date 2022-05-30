@@ -30,7 +30,7 @@ class BaseSeleniumSpider(scrapy.Spider):
 
     def exception_handler(self,error,driver):
         error_data = {
-                        "Time" : datetime.utcnow().strftime(("%m-%d-%Y %H:%M:%S")),
+                        "Time" : datetime.utcnow(),
                         'Spider' : self.name,
                         'Process' : "Spider Scraping",
                         "URL" : driver.current_url,
@@ -290,7 +290,7 @@ class EvoSpider(BaseSeleniumSpider):
     def load_item_from_dict(self,item_data):
 
         data = ItemLoader(item = CuratedEvoItem())
-        data.add_value('last_updated', item_data["Last Updated"].strftime(("%m-%d-%Y %H:%M:%S")))
+        data.add_value('last_updated', item_data["Last Updated"])
         data.add_value('type',item_data["Type"])
         data.add_value('name',item_data['Name'])
         data.add_value('url', item_data['URL'])
