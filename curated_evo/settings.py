@@ -77,7 +77,7 @@ DOWNLOADER_MIDDLEWARES = {
 
 # GSHEET SETTINGS
 
-GSHEET_NAME = "CuratedEvo"
+GSHEET_NAME = environ['GSHEET_NAME']
 GSHEET_COLUMNS = [
                         "Last Updated",
                         "Type",

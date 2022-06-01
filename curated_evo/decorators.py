@@ -56,7 +56,7 @@ class Decorators:
                 try:
                     return (yield from gen(*args, **kwargs))
                 except exc as e:
-                    args[0].exception_handler(e,args[1].request.meta['driver'])
+                    args[0].exception_handler(e,args[1])
             return wrapper
         return decorator_gen
 
