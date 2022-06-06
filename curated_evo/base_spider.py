@@ -24,6 +24,7 @@ class BaseSeleniumSpider(scrapy.Spider):
     meta_data = {}
 
     def exception_handler(self,error,response):
+        gsheet.read_worksheet('ERRORS')
         error_data = {
                         "Time" : datetime.utcnow(),
                         'Spider' : self.name,

@@ -52,7 +52,6 @@ class Gsheet:
         # Create Dataframe
         self.base_df = pd.DataFrame(columns=columns_list)
         self.errors_df = pd.DataFrame(columns=self.error_columns_list)
-        self.read_worksheet('ERRORS')
     
     @decorate.connection_retry()
     def read_worksheet(self,name='DefaultSheetName'):
