@@ -1,1 +1,3 @@
 /.env
+/curated_evo/__pycache__
+/curated_evo/spiders/__pycache__
