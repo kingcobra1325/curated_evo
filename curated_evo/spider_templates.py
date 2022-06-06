@@ -19,6 +19,27 @@ from .base_spider import BaseSeleniumSpider
 class EvoSpider(BaseSeleniumSpider):
     allowed_domains = ['www.evo.com']
 
+    item_data_label = [
+                    "name",                                            
+                    "brand", 
+                    "image_source_url",                                            
+                    "sale_price",
+                    "orig_price",
+                    "available_colors",
+                    "available_sizes",
+                    "condition",
+                    # ski / snowboard
+                    "terrain",
+                    "ability_level",
+                    "rocker_type",
+                    # ski only
+                    "turning_radius",
+                    "waist_width",
+                    # snowboard only
+                    "flex_rating",
+                    "shape",
+                    ]
+
     item_measurement = ''
 
     def start_requests(self):

@@ -7,27 +7,14 @@ class SkisSpider(EvoSpider):
     item_measurement = 'cm'
 
     excluded_data = [
-                    "flex_rating",
-                    "shape",
-                    ]
-    
-    item_data_label = [
-                    "name",                                            
-                    "brand", 
-                    "image_source_url",                                            
-                    "sale_price",
-                    "orig_price",
-                    "available_colors",
-                    "available_sizes",
-                    "condition",
                     # ski / snowboard
-                    "terrain",
-                    "ability_level",
-                    "rocker_type",
+                    # "terrain",
+                    # "ability_level",
+                    # "rocker_type",
                     # ski only
-                    "turning_radius",
-                    "waist_width",
-                    # snowboard onlys
+                    # "turning_radius",
+                    # "waist_width",
+                    # snowboard only
                     "flex_rating",
                     "shape",
                     ]
